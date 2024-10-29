@@ -1,82 +1,99 @@
 "use client";
 
-import React, { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Step1 } from "./SignupForm";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { Step1, Step1Schema } from "@/types/auth";
+
+import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface Step1Props {
-  onNext: (termsAccepted: { terms1: boolean; terms2: boolean }) => void;
+  onNext: (data: Step1) => void;
 }
 
 const Step1Form = ({ onNext }: Step1Props) => {
-  const { control, handleSubmit } = useForm<Step1>({
-    defaultValues: { termsAccepted: { terms1: false, terms2: false } },
+  const form = useForm<Step1>({
+    resolver: zodResolver(Step1Schema),
+    defaultValues: {
+      terms1: false,
+      terms2: false,
+      terms3: false,
+    },
   });
-  // const [terms1, setTerms1] = useState<boolean>(false);
-  // const [terms2, setTerms2] = useState<boolean>(false);
 
-  const onSubmit = (data: { terms1: boolean; terms2: boolean }) => {
-    onNext(data);
+  const onSubmit: SubmitHandler<Step1> = (values) => {
+    onNext(values);
   };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <h2>Step1</h2>
-      <label>
-        <Controller
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField
+          control={form.control}
           name="terms1"
-          control={control}
           render={({ field }) => (
-            <input
-              type="checkbox"
-              {...field}
-              onChange={(e) => field.onChange(e.target.checked)}
-            />
+            <FormItem>
+              <FormLabel>약관 1에 동의합니다.</FormLabel>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={(checked) => field.onChange(checked)}
+                />
+              </FormControl>
+              {form.formState.errors.terms1 && (
+                <FormMessage className="text-red-500" />
+              )}
+            </FormItem>
           )}
-        />
-        <p>약관 1에 동의합니다</p>
-      </label>
-      <label>
-        <Controller
+        ></FormField>
+
+        <FormField
+          control={form.control}
           name="terms2"
-          control={control}
           render={({ field }) => (
-            <input
-              type="checkbox"
-              {...field}
-              onChange={(e) => field.onChange(e.target.checked)}
-            />
+            <FormItem>
+              <FormLabel>약관 2에 동의합니다.</FormLabel>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={(checked) => field.onChange(checked)}
+                />
+              </FormControl>
+              {form.formState.errors.terms2 && (
+                <FormMessage className="text-red-500" />
+              )}
+            </FormItem>
           )}
-        />
-        <p>약관 2에 동의합니다.</p>
-      </label>
-      <button type="submit">Next</button>
-    </form>
-    // <div>
-    //   <h2>Step1</h2>
-    //   <label>
-    //     <input
-    //       type="checkbox"
-    //       required
-    //       onChange={(e) => setTerms1(e.target.checked)}
-    //     />
-    //     <p>약관 1에 동의합니다.</p>
-    //   </label>
-    //   <label>
-    //     <input
-    //       type="checkbox"
-    //       required
-    //       onChange={(e) => setTerms2(e.target.checked)}
-    //     />
-    //     <p>약관 2에 동의합니다.</p>
-    //   </label>
-    //   <button
-    //     onClick={() => {
-    //       onNext({ terms1, terms2 });
-    //     }}
-    //   >
-    //     Next
-    //   </button>
-    // </div>
+        ></FormField>
+
+        <FormField
+          control={form.control}
+          name="terms3"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>약관 3에 동의합니다.</FormLabel>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={(checked) => field.onChange(checked)}
+                />
+              </FormControl>
+              {form.formState.errors.terms3 && (
+                <FormMessage className="text-red-500" />
+              )}
+            </FormItem>
+          )}
+        ></FormField>
+        <Button type="submit">Next</Button>
+      </form>
+    </FormProvider>
   );
 };
 
